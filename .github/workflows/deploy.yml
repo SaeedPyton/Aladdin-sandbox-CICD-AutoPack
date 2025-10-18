@@ -1,0 +1,60 @@
+name: Deploy (Render)
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  compute-changes:
+    name: Detect changed apps
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.out.outputs.changed }}
+      envname: ${{ steps.envname.outputs.envname }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set environment name
+        id: envname
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "envname=production" >> $GITHUB_OUTPUT
+          else
+            echo "envname=staging" >> $GITHUB_OUTPUT
+          fi
+      - id: out
+        run: |
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+          if [ -z "$BEFORE" ]; then
+            BEFORE=$(git rev-list --max-parents=0 HEAD)
+          fi
+          CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" | grep '^apps/' | cut -d'/' -f2 | sort -u | tr '\n' ' ')
+          if [ -z "$CHANGED" ]; then
+            # If nothing under apps changed, deploy the root if there is infra or config changes
+            ROOTCHANGED=$(git diff --name-only "$BEFORE" "$AFTER" | egrep -v '^apps/' | wc -l)
+            if [ "$ROOTCHANGED" -gt 0 ]; then
+              CHANGED="root"
+            fi
+          fi
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed apps: $CHANGED"
+
+  deploy:
+    needs: compute-changes
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.compute-changes.outputs.envname }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make deploy script executable
+        run: chmod +x infra/deploy_render.sh
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICES_JSON: ${{ secrets.RENDER_SERVICES_JSON }}
+        run: |
+          ./infra/deploy_render.sh "${{ needs.compute-changes.outputs.envname }}" "${{ needs.compute-changes.outputs.changed }}"

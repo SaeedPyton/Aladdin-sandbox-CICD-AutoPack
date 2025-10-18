@@ -1,0 +1,51 @@
+name: Build (Monorepo)
+
+on:
+  push:
+    branches: [ "develop", "main", "feature/**" ]
+  pull_request:
+
+jobs:
+  detect-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.set.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set
+        run: |
+          APPS=$(ls -1 apps 2>/dev/null | tr '\n' ',' | sed 's/,$//')
+          if [ -z "$APPS" ]; then
+            echo "No apps/ found; defaulting to root"
+            echo "apps=root" >> $GITHUB_OUTPUT
+          else
+            echo "apps=$APPS" >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    needs: detect-apps
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [${{ needs.detect-apps.outputs.apps }}]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install & Build
+        working-directory: ${{ matrix.app == 'root' && '.' || format('apps/{0}', matrix.app) }}
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm i
+          fi
+          if [ -f package.json ]; then
+            npm run build --if-present
+          fi

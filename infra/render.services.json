@@ -1,0 +1,10 @@
+{
+  "staging": {
+    "homecouver": "srv-xxxxxxxx",
+    "startbaz": "srv-yyyyyyyy"
+  },
+  "production": {
+    "homecouver": "srv-aaaaaaaa",
+    "startbaz": "srv-bbbbbbbb"
+  }
+}

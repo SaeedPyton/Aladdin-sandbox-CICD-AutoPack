@@ -1,0 +1,8 @@
+{
+  "name": "aladdin-sandbox-cicd-helper",
+  "private": true,
+  "scripts": {
+    "build": "echo \"(root build placeholder)\"",
+    "test": "echo \"(root test placeholder)\" && exit 0"
+  }
+}

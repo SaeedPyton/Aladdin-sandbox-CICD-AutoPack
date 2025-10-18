@@ -1,0 +1,25 @@
+name: Release (GitHub)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create zip artifact
+        run: |
+          ZIPNAME="release-${GITHUB_REF_NAME}.zip"
+          git archive -o "$ZIPNAME" "${GITHUB_REF_NAME}"
+          echo "ZIPNAME=$ZIPNAME" >> $GITHUB_ENV
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIPNAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
