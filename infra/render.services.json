@@ -1,10 +1,8 @@
 {
   "staging": {
-    "homecouver": "srv-xxxxxxxx",
-    "startbaz": "srv-yyyyyyyy"
+    "youtube_automation_v3_render_ready": "srv-d3q6120dl3ps73bmahv0"
   },
   "production": {
-    "homecouver": "srv-aaaaaaaa",
-    "startbaz": "srv-bbbbbbbb"
+    "youtube_automation_v3_render_ready": "srv-d3q6120dl3ps73bmahv0"
   }
 }
