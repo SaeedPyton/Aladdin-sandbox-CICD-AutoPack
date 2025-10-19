@@ -1,10 +1,8 @@
 {
   "staging": {
-    "homecouver": "srv-xxxxxxxx",
     "hello-test": "srv-d3q6120dl3ps73bmahv0"
   },
   "production": {
-    "homecouver": "srv-aaaaaaaa",
     "hello-test": "srv-d3q6120dl3ps73bmahv0"
   }
 }
