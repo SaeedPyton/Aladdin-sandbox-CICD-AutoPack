@@ -1,8 +1,8 @@
 {
   "staging": {
-    "hello-test": "srv-d3q6120dl3ps73bmahv0"
+    "youtube_automation_v3_render_ready": "srv-d3q6120dl3ps73bmahv0"
   },
   "production": {
-    "hello-test": "srv-d3q6120dl3ps73bmahv0"
+    "youtube_automation_v3_render_ready": "srv-d3q6120dl3ps73bmahv0"
   }
 }
