@@ -1,7 +1,7 @@
 {
   "staging": {
     "homecouver": "srv-xxxxxxxx",
-    "startbaz": "srv-yyyyyyyy"
+    "hello-test": "srv-d3q6120dl3ps73bmahv0"
   },
   "production": {
     "homecouver": "srv-aaaaaaaa",
